@@ -3,3 +3,4 @@ kint/
 controllers/
 index.php
 routes.php
+composer.lock

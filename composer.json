@@ -2,6 +2,7 @@
     "name": "akl/rout",
     "description": "A simple router.",
     "license": "Mit",
+    "keywords" : ["routing", "router", "routes", "route delegation"],
     "authors": [
         {
             "name": "Andrew Klatzke",
@@ -9,10 +10,11 @@
         }
     ],
     "autoload" : {
-        "psr-0" : {
-            "AKL" : "src"
+        "psr-4" : {
+            "AKL\\" : "src"
         }
     },
-    "require": {
+    "require-dev": {
+        "phpunit/phpunit" : "4.0.*"
     }
 }
