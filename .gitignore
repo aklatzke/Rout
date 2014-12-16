@@ -1,0 +1,5 @@
+/vendor/
+kint/
+controllers/
+index.php
+routes.php
