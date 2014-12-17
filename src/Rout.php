@@ -103,6 +103,10 @@ final class Rout
         return self::$map->add($route, $uniq);
     }
 
+    /**
+     * Returns the internal map for the RouteMap singleton
+     * @return Array    tree of routes
+     */
     public static function getMap()
     {
         self::start();
@@ -110,8 +114,18 @@ final class Rout
         return self::$map->getMap();
     }
 
+    /**
+     * Standard "route not found" action. Define the helper function 'rout_not_found'
+     * to override this behavior
+     * @param  [type] $message [description]
+     * @return [type]          [description]
+     */
     public static function notFound($message)
     {
+        # if the helper 'rout_not_found' has been defined, run it
+        # instead of using the default 404 functionality
+        if( function_exists('rout_not_found') ) return rout_not_found();
+
         header('HTTP/1.0 404 Not Found');
         echo "<h1>404 Error - Page Not Found";
         echo $message;
