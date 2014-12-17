@@ -57,13 +57,13 @@ final class Rout
         $routeData = self::$map->find($routePath);
         # no routeID is returned - this is a dead route
         if (!isset($routeData["id"])) {
-            self::errorHandler(CONST_ROUTE_NOT_FOUND);
+            self::notFound(ROUTE_NOT_FOUND);
         }
 
         $route = self::$map->get($routeData["id"]);
         # a route ID was returned but no route exists, abort
         if (!$route) {
-            self::errorHandler(CONST_ROUTE_NOT_FOUND);
+            self::notFound(ROUTE_NOT_FOUND);
         }
 
         return $route->run($routeData);
@@ -127,7 +127,7 @@ final class Rout
         if( function_exists('rout_not_found') ) return rout_not_found();
 
         header('HTTP/1.0 404 Not Found');
-        echo "<h1>404 Error - Page Not Found";
+        echo "<h4>404 Error - Page Not Found</h4>";
         echo $message;
         die();
     }

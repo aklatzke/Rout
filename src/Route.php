@@ -78,7 +78,7 @@ class Route
     public function checkRequestMethod()
     {
         # if set, all methods are allowed
-        if (isset($this->method["*"])) {
+        if ( in_array("*", $this->method) ) {
             return true;
         }
 
