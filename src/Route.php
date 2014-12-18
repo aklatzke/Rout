@@ -10,6 +10,7 @@ class Route
     protected $ajax = false;
     protected $params = [];
     protected $method = ["*"];
+    protected $filters = [];
 
     public function __construct($keys, $options)
     {
@@ -25,6 +26,11 @@ class Route
             $this->method = array_map(function ($n) {
                 return strtoupper($n);
             }, $options["method"]);
+        }
+
+        if (isset($options["filters"]) && is_array($options["filters"]))
+        {
+           $this->filters = $options["filters"];
         }
     }
 
@@ -58,11 +64,9 @@ class Route
         # if processed over AJAX, JSON encode and die immediately
         if ($this->ajax) {
             echo json_encode(call_user_func($callback, $args));
-            die();
         }
         # if none of the above happened, it's just a function call
         echo call_user_func($callback, $args);
-        die();
     }
 
     /**
@@ -72,6 +76,15 @@ class Route
     public function getKeys()
     {
         return $this->keys;
+    }
+
+    /**
+     * Returns the filters for the route
+     * @return Array array of filters
+     */
+    public function getFilters()
+    {
+        return $this->filters;
     }
 
     /**

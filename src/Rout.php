@@ -14,6 +14,7 @@ final class Rout
     protected static $routeFactory;
     protected static $urlHandler;
     protected static $map;
+    protected static $filters;
 
     /**
      * Must be called with every method call to make sure we are using singleton instances
@@ -31,6 +32,10 @@ final class Rout
 
         if (!isset(self::$map)) {
             self::$map = new RouteMap();
+        }
+
+        if (!isset(self::$filters)) {
+            self::$filters = new FilterMap();
         }
     }
 
@@ -53,6 +58,8 @@ final class Rout
      */
     public static function runRoute( $requestString, $extra = [] )
     {
+        self::start();
+
         $routePath = self::$urlHandler->parseRoute($requestString);
 
         $routeData = self::$map->find($routePath);
@@ -67,15 +74,22 @@ final class Rout
 
         $route = self::$map->get($routeData["_id"]);
         # a route ID was returned but no route exists, abort
-        if (!$route)
+        if ( ! $route)
         {
             self::notFound(ROUTE_NOT_FOUND);
         }
+        $filterList = $route->getFilters();
+        self::$filters->run( $filterList, $extra, 'before' );
+        $route->run($routeData, $extra);
+         self::$filters->run( $filterList, $extra, 'after' );
 
-        return $route->run($routeData, $extra);
+         return true;
     }
-
-    public function getURLParams( $urlParams )
+    /**
+     * Getter $this->params
+     * @return Array            array of URL params
+     */
+    public function getURLParams( )
     {
         self::$start();
 
@@ -143,11 +157,26 @@ final class Rout
         echo $message;
         die();
     }
-
+    /**
+     * Getter
+     * @return string request domain
+     */
     public static function getDomain()
     {
         self::start();
 
         return self::$handler->getDomain();
+    }
+/**
+ * Adds a filter to the FilterMap singleton
+ * @param string $name        name of the filter
+ * @param string $action      fed to call_user_func internally - method name or function name
+ * @param string $designation 'before' or 'after'
+ */
+    public static function addFilter( $name, $action, $designation = 'before' )
+    {
+        self::start();
+
+        return self::$filters->add($name, $action, $designation);
     }
 }
