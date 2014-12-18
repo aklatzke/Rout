@@ -51,25 +51,35 @@ final class Rout
      * @param  String $requestString      the URL request
      * @return  mixed                        returns the result of the action call
      */
-    public static function runRoute($requestString)
+    public static function runRoute( $requestString, $extra = [] )
     {
         $routePath = self::$urlHandler->parseRoute($requestString);
 
         $routeData = self::$map->find($routePath);
         # no routeID is returned - this is a dead route
-        if (!isset($routeData["id"]))
+        if (!isset($routeData["_id"]))
         {
             self::notFound(ROUTE_NOT_FOUND);
         }
 
-        $route = self::$map->get($routeData["id"]);
+        $input = self::$urlHandler->getQuery();
+        $extra = array_merge( $extra, ["_query" => $input] );
+
+        $route = self::$map->get($routeData["_id"]);
         # a route ID was returned but no route exists, abort
         if (!$route)
         {
             self::notFound(ROUTE_NOT_FOUND);
         }
 
-        return $route->run($routeData);
+        return $route->run($routeData, $extra);
+    }
+
+    public function getURLParams( $urlParams )
+    {
+        self::$start();
+
+        return self::$urlHandler->getParams();
     }
 
     /**
@@ -129,8 +139,15 @@ final class Rout
         if( function_exists('rout_not_found') ) return rout_not_found();
 
         header('HTTP/1.0 404 Not Found');
-        echo "<h4>" . ROUTE_NOT_FOUND . "</h4>";
+        echo "<h4>404</h4>";
         echo $message;
         die();
+    }
+
+    public static function getDomain()
+    {
+        self::start();
+
+        return self::$handler->getDomain();
     }
 }

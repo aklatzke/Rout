@@ -63,7 +63,7 @@ class RouteMap
                 # if this is the last key, set an ID related to the route and the isFinal flag
                 if ($key === $lastKey) {
                     $target[$replKey]["isFinal"] = true;
-                    $target[$replKey]["id"] = $uniq;
+                    $target[$replKey]["_id"] = $uniq;
                 }
 
             }
@@ -129,7 +129,7 @@ class RouteMap
     public function createRouteNode()
     {
         return [
-            "id" => "",
+            "_id" => "",
             "isFinal" => false,
             "param" => false,
             "isParam" => false,

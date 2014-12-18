@@ -33,14 +33,14 @@ class Route
      * @param  [type] $data [description]
      * @return [type]       [description]
      */
-    public function run($data)
+    public function run( $params, $extra = [] )
     {
         if ($this->checkRequestMethod() !== true) {
             echo '404';
             die();
         }
 
-        $args = $data["value"];
+        $args["params"]= $params["value"];
         $callback = $this->action;
         # if it's a string, it's a method call
         if (is_string($callback)) {
@@ -52,6 +52,9 @@ class Route
             $callback[0] = new $temp[0];
             $callback[1] = $temp[1];
         }
+
+        $args["input"] = $extra;
+
         # if processed over AJAX, JSON encode and die immediately
         if ($this->ajax) {
             echo json_encode(call_user_func($callback, $args));
