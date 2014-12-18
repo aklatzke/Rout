@@ -11,8 +11,8 @@ const ROUTE_NOT_FOUND = 'The page you are requesting could not be found.';
 
 final class Rout
 {
-    protected static $router;
-    protected static $handler;
+    protected static $routeFactory;
+    protected static $urlHandler;
     protected static $map;
 
     /**
@@ -21,12 +21,12 @@ final class Rout
      */
     public static function start()
     {
-        if (!isset(self::$router)) {
-            self::$router = new RouteFactory();
+        if (!isset(self::$routeFactory)) {
+            self::$routeFactory = new RouteFactory();
         }
 
-        if (!isset(self::$handler)) {
-            self::$handler = new URLHandler();
+        if (!isset(self::$urlHandler)) {
+            self::$urlHandler = new URLHandler();
         }
 
         if (!isset(self::$map)) {
@@ -43,7 +43,7 @@ final class Rout
     {
         self::start();
 
-        return self::$handler->parseRoute($requestString, $leadingWhitespace);
+        return self::$urlHandler->parseRoute($requestString, $leadingWhitespace);
     }
 
     /**
@@ -53,16 +53,19 @@ final class Rout
      */
     public static function runRoute($requestString)
     {
-        $routePath = self::$handler->parseRoute($requestString);
+        $routePath = self::$urlHandler->parseRoute($requestString);
+
         $routeData = self::$map->find($routePath);
         # no routeID is returned - this is a dead route
-        if (!isset($routeData["id"])) {
+        if (!isset($routeData["id"]))
+        {
             self::notFound(ROUTE_NOT_FOUND);
         }
 
         $route = self::$map->get($routeData["id"]);
         # a route ID was returned but no route exists, abort
-        if (!$route) {
+        if (!$route)
+        {
             self::notFound(ROUTE_NOT_FOUND);
         }
 
@@ -78,7 +81,8 @@ final class Rout
     {
         self::start();
 
-        foreach ($arr as $key => $arr) {
+        foreach ($arr as $key => $arr)
+        {
             self::add($key, $arr);
         }
 
@@ -93,11 +97,9 @@ final class Rout
     public static function add($key, $options)
     {
         self::start();
-
         # break route into route keys
-        $keys = self::$handler->parseRoute($key);
-        $route = self::$router->create($keys, $options);
-
+        $keys = self::$urlHandler->parseRoute($key);
+        $route = self::$routeFactory->create($keys, $options);
         # generate a unique ID that needs passed to the route map
         $uniq = uniqid();
         return self::$map->add($route, $uniq);
@@ -127,7 +129,7 @@ final class Rout
         if( function_exists('rout_not_found') ) return rout_not_found();
 
         header('HTTP/1.0 404 Not Found');
-        echo "<h4>404 Error - Page Not Found</h4>";
+        echo "<h4>" . ROUTE_NOT_FOUND . "</h4>";
         echo $message;
         die();
     }
