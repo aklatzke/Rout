@@ -22,8 +22,6 @@ class FilterMap
 
 	public function run( Array $filterList, $data, $designation = 'before' )
 	{
-		d($filterList);
-		d($this->map);
 		foreach( $filterList as $filter )
 		{
 			if( isset($this->map[$filter]) && $this->map[$filter]['designation'] === $designation )
