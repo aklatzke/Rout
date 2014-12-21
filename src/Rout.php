@@ -79,7 +79,14 @@ final class Rout
             self::notFound(ROUTE_NOT_FOUND);
         }
         $filterList = $route->getFilters();
-        self::$filters->run( $filterList, $extra, 'before' );
+
+       $res = self::$filters->run( $filterList, $extra, 'before' );
+
+        if( ! $res )
+        {
+            self::notFound(ROUTE_NOT_FOUND);
+        }
+
         $route->run($routeData, $extra);
          self::$filters->run( $filterList, $extra, 'after' );
 
