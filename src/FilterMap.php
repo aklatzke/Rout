@@ -22,14 +22,18 @@ class FilterMap
 
 	public function run( Array $filterList, $data, $designation = 'before' )
 	{
-		d($filterList);
-		d($this->map);
 		foreach( $filterList as $filter )
 		{
+			d( $this->map[$filter]['designation'],  $designation);
 			if( isset($this->map[$filter]) && $this->map[$filter]['designation'] === $designation )
 			{
-				return call_user_func( $this->map[$filter]['action'], $data );
+				$res = call_user_func( $this->map[$filter]['action'], $data );
+
+				if( $res === false )
+					return $res;
 			}
 		}
+
+		return true;
 	}
 }
